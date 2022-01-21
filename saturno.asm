@@ -5,11 +5,11 @@
 ;;        #$@$@$@#@#@#@$
 ;;        @#@$%    
 ;;        @#$@$   
-;;        #@#$$##%%!@#@#     Copyright © 2016-2021 Felipe Miguel Nery Lunkes
+;;        #@#$$##%%!@#@#     Copyright © 2016-2022 Felipe Miguel Nery Lunkes
 ;;        @#@%!#$$%&$#@#             Todos os direitos reservados
 ;;                 $&$%#
 ;;                 #&*@&
-;;        $#$#%%#@@&%$#@                   Versão 1.5A
+;;        $#$#%%#@@&%$#@                   Versão 1.6A
 ;;        @#!$$@#$$!#@#@
 ;;
 ;;
@@ -62,7 +62,7 @@ sistemaArquivos:	db 'FAT16   '	 ;; Nome do sistema de arquivos utilizado no disc
 
 SEG_BOOT 	    equ 0x2000 ;; Segmento para realocar carregador de inicialização
 SEG_HBOOT 	    equ 0x1000 ;; Segmento para carregar Kernel
-CABECALHO_HBOOT = 06h      ;; Tamanho do cabeçalho do HBoot (versão 1.0 do cabaçalho)
+CABECALHO_HBOOT = 10h      ;; Tamanho do cabeçalho do HBoot (versão 2.0 do cabaçalho)
 
 iniciarHBoot:
 

@@ -23,58 +23,58 @@
 ;;
 ;;************************************************************************************
 
-use16					
+use16                   
 
     jmp short iniciarHBoot
             
-    nop	
+    nop 
 
 ;;************************************************************************************
 
 ;; BIOS Parameter Block (BPB)
-;; Necessário para a identificação do disco		  
+;; Necessário para a identificação do disco        
 
 ;;************************************************************************************
                                                         
 BPB:
 
-NomeOEM:		    db 'HEXAGON '    ;; Nome OEM
-bytesPorSetor:	 	dw 512		     ;; Número de bytes em cada setor
-setoresPorCluster:	db 8		     ;; Setores por cluster
-setoresReservados:	dw 16		     ;; Setores reservados após o setor de inicialização
-totalFATs:		    db 2		     ;; Número de tabelas FAT
-entradasRaiz:		dw 512		     ;; Número total de pastas e arquivos no diretório raiz
-pequenosSetores:	dw 0		     ;; Número total de pequenos setores no disco
-tipoMedia:		    db 0xf8 	     ;; Tipo de media. 0xf8 para discos rígidos
-setoresPorFAT:		dw 16		     ;; Setores usados na FAT
-setoresPorTrilha:	dw 63		     ;; Total de setores em uma trilha
-totalCabecas:		dw 255		     ;; Número de cabeças de leitura no disco
-setoresOcultos:		dd 0		     ;; Número de setores antes do início do volume (encontrar diretório raiz)
-totalSetores:		dd 92160	     ;; Tamanho do disco. Aproximadamente 45 Mb
-numDrive:		    db 0x80		     ;; Número de identificação do drive. 0x80 para discos rígidos 
+NomeOEM:            db 'HEXAGON '    ;; Nome OEM
+bytesPorSetor:      dw 512           ;; Número de bytes em cada setor
+setoresPorCluster:  db 8             ;; Setores por cluster
+setoresReservados:  dw 16            ;; Setores reservados após o setor de inicialização
+totalFATs:          db 2             ;; Número de tabelas FAT
+entradasRaiz:       dw 512           ;; Número total de pastas e arquivos no diretório raiz
+pequenosSetores:    dw 0             ;; Número total de pequenos setores no disco
+tipoMedia:          db 0xf8          ;; Tipo de media. 0xf8 para discos rígidos
+setoresPorFAT:      dw 16            ;; Setores usados na FAT
+setoresPorTrilha:   dw 63            ;; Total de setores em uma trilha
+totalCabecas:       dw 255           ;; Número de cabeças de leitura no disco
+setoresOcultos:     dd 0             ;; Número de setores antes do início do volume (encontrar diretório raiz)
+totalSetores:       dd 92160         ;; Tamanho do disco. Aproximadamente 45 Mb
+numDrive:           db 0x80          ;; Número de identificação do drive. 0x80 para discos rígidos 
                     db 0             ;; Reservado
-assinaturaDisco:	db 0             ;; Assinatura do disco
-IDVolume:		    dd 0		     ;; Qualquer número
-rotuloVolume:		db 'HEXAGONIX  ' ;; Um nome de 11 caracteres para o disco
-sistemaArquivos:	db 'FAT16   '	 ;; Nome do sistema de arquivos utilizado no disco
+assinaturaDisco:    db 0             ;; Assinatura do disco
+IDVolume:           dd 0             ;; Qualquer número
+rotuloVolume:       db 'HEXAGONIX  ' ;; Um nome de 11 caracteres para o disco
+sistemaArquivos:    db 'FAT16   '    ;; Nome do sistema de arquivos utilizado no disco
 
 ;;************************************************************************************
 
-SEG_BOOT 	    equ 0x2000 ;; Segmento para realocar carregador de inicialização
-SEG_HBOOT 	    equ 0x1000 ;; Segmento para carregar Kernel
+SEG_BOOT        equ 0x2000 ;; Segmento para realocar carregador de inicialização
+SEG_HBOOT       equ 0x1000 ;; Segmento para carregar Kernel
 CABECALHO_HBOOT = 10h      ;; Tamanho do cabeçalho do HBoot (versão 2.0 do cabaçalho)
 
 iniciarHBoot:
 
 ;; Configurar pilha e ponteiro
 
-    cli				   ;; Desativar interrupções
+    cli                ;; Desativar interrupções
     
     mov ax, 0x5000
     mov ss, ax
     mov sp, 0
     
-    sti				   ;; Habilitar interrupções
+    sti                ;; Habilitar interrupções
 
 ;; Salvar entedereço LBA da partição
 
@@ -91,11 +91,11 @@ iniciarHBoot:
 
     cli
     
-    cld				    ;; Limpar direção
+    cld                 ;; Limpar direção
     
-    mov si, 0x7c00		;; Fonte (DS:SI)
-    mov di, 0			;; Destino (ES:DI)
-    mov ecx, 512		;; Total de bytes para mover
+    mov si, 0x7c00      ;; Fonte (DS:SI)
+    mov di, 0           ;; Destino (ES:DI)
+    mov ecx, 512        ;; Total de bytes para mover
     
     rep movsb
 
@@ -122,24 +122,24 @@ inicio:
 ;; Tamanho  = (entradasRaiz * 32) / bytesPorSetor
 
     mov ax, word[entradasRaiz]
-    shl ax, 5			;; Multiplicar por 32
+    shl ax, 5           ;; Multiplicar por 32
     mov bx, word[bytesPorSetor]
-    xor dx, dx			;; DX = 0
+    xor dx, dx          ;; DX = 0
     
-    div bx				;; AX = AX / BX
+    div bx              ;; AX = AX / BX
     
     mov word[tamanhoRaiz], ax ;; Salvar tamanho do diretório raiz
 
-;; Calcular o tamanho das tabelas FAT	
+;; Calcular o tamanho das tabelas FAT   
 ;;
 ;; Fórmula:
 ;; Tamanho  = totalFATs * setoresPorFAT
 
     mov ax, word[setoresPorFAT]
     movzx bx, byte[totalFATs]
-    xor dx, dx			      ;; DX = 0
+    xor dx, dx                ;; DX = 0
     
-    mul bx				      ;; AX = AX * BX
+    mul bx                    ;; AX = AX * BX
     
     mov word[tamanhoFATs], ax ;; Salvar tamanho das FATs
 
@@ -149,7 +149,7 @@ inicio:
 ;;
 ;; setoresReservados + LBA da partição
 
-    add word[setoresReservados], bp	;; BP é o LBA da partição
+    add word[setoresReservados], bp ;; BP é o LBA da partição
     
 ;; Calcular o endereço da área de dados
 ;;
@@ -157,7 +157,7 @@ inicio:
 ;;
 ;; setoresReservados + tamanhoFATs + tamanhoRaiz
 
-    movzx eax, word[setoresReservados]	
+    movzx eax, word[setoresReservados]  
     
     add ax, word[tamanhoFATs]
     add ax, word[tamanhoRaiz]
@@ -184,24 +184,24 @@ inicio:
     mov cx, word[entradasRaiz]
     mov bx, bufferDeDisco
 
-    cld				    ;; Limpar direção
+    cld                 ;; Limpar direção
     
 loopEncontrarArquivo:
 
 ;; Encontrar o nome de 11 caracteres do arquivo em uma entrada
 
-    xchg cx, dx			;; Salvar contador de loop
+    xchg cx, dx         ;; Salvar contador de loop
     mov cx, 11
     mov si, nomeHBoot
     mov di, bx
     
-    rep cmpsb			;; Comparar (ECX) caracteres entre DI e SI
+    rep cmpsb           ;; Comparar (ECX) caracteres entre DI e SI
     
     je arquivoEncontrado
 
-    add bx, 32			;; Ir para a próxima entrada do diretório raiz (+ 32 bytes)
+    add bx, 32          ;; Ir para a próxima entrada do diretório raiz (+ 32 bytes)
     
-    xchg cx, dx			;; Restaurar contador
+    xchg cx, dx         ;; Restaurar contador
     
     loop loopEncontrarArquivo
 
@@ -217,14 +217,14 @@ loopEncontrarArquivo:
 
 arquivoEncontrado:
 
-    mov si, word[bx+26]		
+    mov si, word[bx+26]     
     mov word[cluster], si ;; Salvar primeiro cluster
 
 ;; Carregar FAT na memória para encontrar todos os clusters do arquivo
 
-    mov ax, word[setoresPorFAT]	    ;; Total de setores para carregar
-    mov si, word[setoresReservados]	;; LBA
-    mov di, bufferDeDisco		    ;; Buffer para onde os dados serão carregados
+    mov ax, word[setoresPorFAT]     ;; Total de setores para carregar
+    mov si, word[setoresReservados] ;; LBA
+    mov di, bufferDeDisco           ;; Buffer para onde os dados serão carregados
 
     call carregarSetor
 
@@ -238,13 +238,13 @@ arquivoEncontrado:
     movzx ebx, word[bytesPorSetor]
     xor edx, edx
         
-    mul ebx				    ;; AX = AX * BX	
+    mul ebx                 ;; AX = AX * BX 
     
-    mov ebp, eax			;; Salvar tamanho do cluster
+    mov ebp, eax            ;; Salvar tamanho do cluster
     
-    mov ax, SEG_HBOOT		;; Segmento de carregamento do Kernel
+    mov ax, SEG_HBOOT       ;; Segmento de carregamento do Kernel
     mov es, ax
-    mov edi, 0			    ;; Buffer para carregar o Kernel
+    mov edi, 0              ;; Buffer para carregar o Kernel
 
 ;; Encontrar cluster e carregar cadeia de clusters
 
@@ -256,16 +256,16 @@ loopCarregarClusters:
 ;; 
 ;; ((cluster - 2) * setoresPorCluster) + areaDeDados
  
-    movzx esi, word[cluster]	
+    movzx esi, word[cluster]    
         
     sub esi, 2
 
-    movzx ax, byte[setoresPorCluster]		
+    movzx ax, byte[setoresPorCluster]       
     xor edx, edx         ;; DX = 0
     
     mul esi              ;; (cluster - 2) * setoresPorCluster
     
-    mov esi, eax	
+    mov esi, eax    
 
     add esi, dword[areaDeDados]
 
@@ -280,7 +280,7 @@ loopCarregarClusters:
     
     add bx, bufferDeDisco       ;; Localização da FAT
 
-    mov si, word[bx]		    ;; SI contêm o próximo cluster
+    mov si, word[bx]            ;; SI contêm o próximo cluster
 
     mov word[cluster], si       ;; Salvar isso
 
@@ -313,7 +313,7 @@ finalizado:
 ;;
 ;;************************************************************************************
     
-cluster:	      dw 0
+cluster:          dw 0
 naoEncontrado:    db "HBoot nao encontrado!", 0
 erroDisco:        db "Erro de disco!", 0 ;; Mensagem de erro no disco  
 nomeHBoot:        db "HBOOT      "       ;; Nome do arquivo que contém o HBoot, a ser carregado
@@ -333,9 +333,9 @@ enderecoParticao: dd 0
 
 imprimir:
 
-    lodsb		;; mov AL, [SI] & inc SI
+    lodsb       ;; mov AL, [SI] & inc SI
     
-    or al, al	;; cmp AL, 0
+    or al, al   ;; cmp AL, 0
     jz .pronto
     
     mov ah, 0Eh
@@ -355,7 +355,7 @@ imprimir:
 ;; Entrada:
 ;;
 ;; AX  - Total de setores para carregar
-;; ESI - Endereço LBA	
+;; ESI - Endereço LBA  
 ;; ES:DI - Localização do destino
 
 carregarSetor:
@@ -369,15 +369,15 @@ carregarSetor:
 
     mov dl, byte[numDrive]
     mov si, Saturno.Disco
-    mov ah, 0x42		;; Função de leitura
+    mov ah, 0x42        ;; Função de leitura
     
     int 13h             ;; Serviços de disco do BIOS
     
-    jnc .concluido			
+    jnc .concluido          
 
 ;; Se ocorrerem erros no disco, exibir mensagem de erro na tela
 
-    mov si, erroDisco	
+    mov si, erroDisco   
     
     call imprimir
     
@@ -393,12 +393,12 @@ carregarSetor:
     
 Saturno.Disco:
 
-.tamanho:		db 16
-.reservado:	    db 0
-.totalSetores:	dw 0
-.deslocamento:	dw 0x0000
-.segmento:	    dw 0
-.LBA:		    dd 0
+.tamanho:       db 16
+.reservado:     db 0
+.totalSetores:  dw 0
+.deslocamento:  dw 0x0000
+.segmento:      dw 0
+.LBA:           dd 0
                 dd 0
 
 ;;************************************************************************************

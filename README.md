@@ -1,3 +1,22 @@
+<p align="center">
+<img src="https://github.com/hexagonix/Doc/blob/main/Img/Hexagonix.png" width="150" height="150">
+</p>
+
+<div align="center">
+
+![](https://img.shields.io/github/license/hexagonix/Saturno.svg)
+![](https://img.shields.io/github/stars/hexagonix/Saturno.svg)
+![](https://img.shields.io/github/issues/hexagonix/Saturno.svg)
+![](https://img.shields.io/github/issues-closed/hexagonix/Saturno.svg)
+![](https://img.shields.io/github/issues-pr/hexagonix/Saturno.svg)
+![](https://img.shields.io/github/issues-pr-closed/hexagonix/Saturno.svg)
+![](https://img.shields.io/github/downloads/hexagonix/Saturno/total.svg)
+![](https://img.shields.io/github/release/hexagonix/Saturno.svg)
+
+</div>
+
+<hr>
+
 # Inicialização do Hexagon
 
 Este repositório contém o gerenciador de inicialização MBR do Hexagonix e o Hexagon Boot, responsável por carregar, configurar e executar o Hexagon, bem como oferecer outros recursos.

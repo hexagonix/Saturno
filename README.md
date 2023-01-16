@@ -30,6 +30,8 @@
 
 Este repositório contém o gerenciador de inicialização MBR do Hexagonix e o Hexagon Boot, responsável por carregar, configurar e executar o Hexagon, bem como oferecer outros recursos.
 
+> **Este arquivo não fornece informações técnicas sobre o Saturno ou o processo de inicialização do Hexagon. Para acessar a documentação técnica completa, clique [aqui](https://github.com/hexagonix/Doc/blob/main/HBoot/README.pt.md).**
+
 ## Saturno
 
 O primeiro componente do Hexagonix é o Saturno. Ele é responsável por receber o controle do processo de inicialização realizado pelo BIOS/UEFI e procurar no volume o segundo estágio de inicialização. Para isso, ele implementa um driver para leitura de um sistema de arquivos FAT16. O segundo estágio de inicialização (HBoot) pode implementar drivers para outros sistemas de arquivos e é responsável por encontrar o Hexagon, carregar módulos HBoot ou carregar um sistema do tipo DOS compatível (versão BETA).
@@ -51,6 +53,8 @@ O primeiro componente do Hexagonix é o Saturno. Ele é responsável por receber
 # Hexagon initialization
 
 This repository contains the Hexagonix MBR boot manager and Hexagon Boot, which is responsible for loading, configuring, and running Hexagon, as well as offering other features.
+
+> **This file does not provide technical information about the Saturno and Hexagon boot process. To access the complete technical documentation, click [here](https://github.com/hexagonix/Doc/tree/main/HBoot/README.en.md).**
 
 ## Saturno
 

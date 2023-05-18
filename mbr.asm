@@ -68,7 +68,7 @@
 
 ;;************************************************************************************
 ;;
-;;                             Saturno® versão 1.0.1 BETA
+;;                             Saturno® versão 1.0.2
 ;;
 ;;                   Carregador de Inicialização do Kernel Hexagon®
 ;;
@@ -215,8 +215,10 @@ PROPRIEDADES_DISCO:
 .LBA:                   dd 000
                         dd 0
 
-msgSemParticaoAtiva:    db "Nenhuma particao ativa encontrada no disco!", 10, 13, 10, 13, 0
-msgErroDisco:           db "Erro no disco!", 0
+msgSemParticaoAtiva:
+db "Nenhuma particao ativa encontrada no disco!", 10, 13, 10, 13, 0
+msgErroDisco:
+db "Erro no disco!", 0
 
 ;;************************************************************************************
     

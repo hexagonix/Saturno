@@ -68,7 +68,7 @@
 
 ;;************************************************************************************
 ;;
-;;                               Saturno® versão 1.6A
+;;                               Saturno® versão 1.7A
 ;;
 ;;                   Carregador de Inicialização do Kernel Hexagon®
 ;;
@@ -366,10 +366,13 @@ finalizado:
 ;;
 ;;************************************************************************************
     
-cluster:          dw 0
-naoEncontrado:    db "HBoot nao encontrado!", 0
-erroDisco:        db "Erro de disco!", 0 ;; Mensagem de erro no disco  
-nomeHBoot:        db "HBOOT      "       ;; Nome do arquivo que contém o HBoot, a ser carregado
+cluster: dw 0
+naoEncontrado:
+db "HBoot nao encontrado!", 0
+erroDisco:
+db "Erro de disco!", 0 ;; Mensagem de erro no disco  
+nomeHBoot:
+db "HBOOT      "       ;; Nome do arquivo que contém o HBoot, a ser carregado
 
 tamanhoRaiz:      dw 0 ;; Tamanho do diretório raiz (em setores)
 tamanhoFATs:      dw 0 ;; Tamanho das tabelas FAT (em setores)

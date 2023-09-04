@@ -11,9 +11,9 @@
 ;;                                               aa,    ,88                                         
 ;;                                                "P8bbdP"       
 ;;
-;;                    Sistema Operacional Hexagonix® - Hexagonix® Operating System
+;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
-;;                          Copyright © 2015-2023 Felipe Miguel Nery Lunkes
+;;                         Copyright (c) 2015-2023 Felipe Miguel Nery Lunkes
 ;;                        Todos os direitos reservados - All rights reserved.
 ;;
 ;;*************************************************************************************************
@@ -68,9 +68,9 @@
 
 ;;************************************************************************************
 ;;
-;;                               Saturno® versão 1.7A
+;;                                Saturno versão 1.7A
 ;;
-;;                   Carregador de Inicialização do Kernel Hexagon®
+;;                   Carregador de Inicialização do Kernel Hexagon
 ;;
 ;;      Carrega o segundo estágio de inicialização, Hexagon Boot (HBoot) no disco
 ;;

@@ -82,15 +82,15 @@ inicio:
 
 ;; Configurar pilha e ponteiros
 
-    cli             ;; Desativar interrupções
+    cli ;; Desativar interrupções
 
     mov ax, 0xffff
     mov ss, ax
     mov sp, 0
 
-    sti             ;; Habilitar interrupções
+    sti ;; Habilitar interrupções
 
-    mov bx, dx      ;; Salvar drive utilizado para a inicialização
+    mov bx, dx ;; Salvar drive utilizado para a inicialização
 
     mov ax, 0
     mov es, ax
@@ -102,8 +102,8 @@ inicio:
 
     cld
 
-    mov si, 0x7c00   ;; Fonte
-    mov di, 0x500    ;; Destino
+    mov si, 0x7c00 ;; Fonte
+    mov di, 0x500 ;; Destino
     mov ecx, 512
 
     rep movsb
@@ -122,7 +122,6 @@ comecar:
     sti
 
 ;; Checar se a partição é ativa e carregar o setor de inicialização
-
 
 checarParticao1:
 
@@ -166,9 +165,9 @@ carregarSetorInicializacao:
     mov dword[PROPRIEDADES_DISCO.LBA], eax
     mov si, PROPRIEDADES_DISCO
 
-    mov ah, 0x42         ;; Carregar setor
+    mov ah, 0x42 ;; Carregar setor
 
-    int 13h              ;; Serviços de disco do BIOS
+    int 13h ;; Serviços de disco do BIOS
 
     jnc leituraDiscoOK
 
@@ -188,9 +187,9 @@ leituraDiscoOK:
 
     mov ax, 0
     mov ds, ax
-    lea si, [di+0x500]  ;; SI = DI+0x500
+    lea si, [di+0x500] ;; SI = DI+0x500
 
-    mov dx, bx          ;; BX contêm o drive de boot
+    mov dx, bx ;; BX contêm o drive de boot
 
     jmp 0x0000:0x7c00
 
@@ -208,12 +207,12 @@ semParticaoAtiva:
 
 PROPRIEDADES_DISCO:
 
-.tamanho:               db 16
-.reservado:             db 0
-.setoresParaLer:        dw 1
-.deslocamentoSegmento:  dd 0x00007c00
-.LBA:                   dd 000
-                        dd 0
+.tamanho:              db 16
+.reservado:            db 0
+.setoresParaLer:       dw 1
+.deslocamentoSegmento: dd 0x00007c00
+.LBA:                  dd 0
+                       dd 0
 
 msgSemParticaoAtiva:
 db "Nenhuma particao ativa encontrada no disco!", 10, 13, 10, 13, 0
@@ -230,14 +229,14 @@ db "Erro no disco!", 0
 
 imprimir:
 
-    lodsb       ;; mov AL, [SI] & inc SI
+    lodsb ;; mov AL, [SI] & inc SI
 
-    or al, al   ;; cmp AL, 0
+    or al, al ;; cmp AL, 0
     jz .pronto
 
     mov ah, 0Eh
 
-    int 10h     ;; Enviar [SI] para a tela
+    int 10h ;; Enviar [SI] para a tela
 
     jmp imprimir
 
@@ -251,20 +250,20 @@ TIMES 0x1BE-($-$$) db 0
 
 particao1:
 
-.bootavel:             db 0x80      ;; 0x80 = ativa (bootável)
+.bootavel:             db 0x80  ;; 0x80 = ativa (bootável)
 .inicioCabeca:         db 0
 .setorDeInicio:        db 2
 .cilindroDeInicio:     db 0
-.IDSistemaDeArquivos:  db 0x06      ;; 0x06 = FAT16
+.IDSistemaDeArquivos:  db 0x06  ;; 0x06 = FAT16
 .ultimaCabeca:         db 255
 .setorFim:             db 255
 .cilindroFim:          db 255
-.LBA:                  dd 1         ;; Início LBA da partição
-.totalSetores:         dd 92160     ;; Tamanho da partição - Aproximadamente 45 megabytes
+.LBA:                  dd 1     ;; Início LBA da partição
+.totalSetores:         dd 92160 ;; Tamanho da partição - Aproximadamente 45 megabytes
 
 particao2:
 
-.bootavel:             db 0x00      ;; Não ativa
+.bootavel:             db 0x00 ;; Não ativa
 .inicioCabeca:         db 0
 .setorDeInicio:        db 0
 .cilindroDeInicio:     db 0
@@ -272,8 +271,8 @@ particao2:
 .ultimaCabeca:         db 0
 .setorFim:             db 0
 .cilindroFim:          db 0
-.LBA:                  dd 0         ;; Início LBA da partição
-.totalSetores:         dd 0         ;; Tamanho da partição - Aproximadamente 512 megabytes
+.LBA:                  dd 0 ;; Início LBA da partição
+.totalSetores:         dd 0 ;; Tamanho da partição - Aproximadamente 512 megabytes
 
 particao3:
 

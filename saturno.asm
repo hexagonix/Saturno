@@ -121,13 +121,13 @@ iniciarHBoot:
 
 ;; Configurar pilha e ponteiro
 
-    cli                ;; Desativar interrupções
+    cli ;; Desativar interrupções
 
     mov ax, 0x5000
     mov ss, ax
     mov sp, 0
 
-    sti                ;; Habilitar interrupções
+    sti ;; Habilitar interrupções
 
 ;; Salvar entedereço LBA da partição
 
@@ -144,11 +144,11 @@ iniciarHBoot:
 
     cli
 
-    cld                 ;; Limpar direção
+    cld ;; Limpar direção
 
-    mov si, 0x7c00      ;; Fonte (DS:SI)
-    mov di, 0           ;; Destino (ES:DI)
-    mov ecx, 512        ;; Total de bytes para mover
+    mov si, 0x7c00 ;; Fonte (DS:SI)
+    mov di, 0 ;; Destino (ES:DI)
+    mov ecx, 512 ;; Total de bytes para mover
 
     rep movsb
 
@@ -175,11 +175,11 @@ inicio:
 ;; Tamanho  = (entradasRaiz * 32) / bytesPorSetor
 
     mov ax, word[entradasRaiz]
-    shl ax, 5           ;; Multiplicar por 32
+    shl ax, 5 ;; Multiplicar por 32
     mov bx, word[bytesPorSetor]
-    xor dx, dx          ;; DX = 0
+    xor dx, dx ;; DX = 0
 
-    div bx              ;; AX = AX / BX
+    div bx ;; AX = AX / BX
 
     mov word[tamanhoRaiz], ax ;; Salvar tamanho do diretório raiz
 
@@ -190,9 +190,9 @@ inicio:
 
     mov ax, word[setoresPorFAT]
     movzx bx, byte[totalFATs]
-    xor dx, dx                ;; DX = 0
+    xor dx, dx ;; DX = 0
 
-    mul bx                    ;; AX = AX * BX
+    mul bx ;; AX = AX * BX
 
     mov word[tamanhoFATs], ax ;; Salvar tamanho das FATs
 
@@ -237,24 +237,24 @@ inicio:
     mov cx, word[entradasRaiz]
     mov bx, bufferDeDisco
 
-    cld                 ;; Limpar direção
+    cld ;; Limpar direção
 
 loopEncontrarArquivo:
 
 ;; Encontrar o nome de 11 caracteres do arquivo em uma entrada
 
-    xchg cx, dx         ;; Salvar contador de loop
+    xchg cx, dx ;; Salvar contador de loop
     mov cx, 11
     mov si, nomeHBoot
     mov di, bx
 
-    rep cmpsb           ;; Comparar (ECX) caracteres entre DI e SI
+    rep cmpsb ;; Comparar (ECX) caracteres entre DI e SI
 
     je arquivoEncontrado
 
-    add bx, 32          ;; Ir para a próxima entrada do diretório raiz (+ 32 bytes)
+    add bx, 32 ;; Ir para a próxima entrada do diretório raiz (+ 32 bytes)
 
-    xchg cx, dx         ;; Restaurar contador
+    xchg cx, dx ;; Restaurar contador
 
     loop loopEncontrarArquivo
 
@@ -275,9 +275,9 @@ arquivoEncontrado:
 
 ;; Carregar FAT na memória para encontrar todos os clusters do arquivo
 
-    mov ax, word[setoresPorFAT]     ;; Total de setores para carregar
+    mov ax, word[setoresPorFAT] ;; Total de setores para carregar
     mov si, word[setoresReservados] ;; LBA
-    mov di, bufferDeDisco           ;; Buffer para onde os dados serão carregados
+    mov di, bufferDeDisco ;; Buffer para onde os dados serão carregados
 
     call carregarSetor
 
@@ -291,13 +291,13 @@ arquivoEncontrado:
     movzx ebx, word[bytesPorSetor]
     xor edx, edx
 
-    mul ebx                 ;; AX = AX * BX
+    mul ebx ;; AX = AX * BX
 
-    mov ebp, eax            ;; Salvar tamanho do cluster
+    mov ebp, eax ;; Salvar tamanho do cluster
 
-    mov ax, SEG_HBOOT       ;; Segmento de carregamento do Kernel
+    mov ax, SEG_HBOOT ;; Segmento de carregamento do Kernel
     mov es, ax
-    mov edi, 0              ;; Buffer para carregar o Kernel
+    mov edi, 0 ;; Buffer para carregar o Kernel
 
 ;; Encontrar cluster e carregar cadeia de clusters
 
@@ -314,9 +314,9 @@ loopCarregarClusters:
     sub esi, 2
 
     movzx ax, byte[setoresPorCluster]
-    xor edx, edx         ;; DX = 0
+    xor edx, edx ;; DX = 0
 
-    mul esi              ;; (cluster - 2) * setoresPorCluster
+    mul esi ;; (cluster - 2) * setoresPorCluster
 
     mov esi, eax
 
@@ -329,20 +329,20 @@ loopCarregarClusters:
 ;; Encontrar próximo setor na tabela FAT
 
     mov bx, word[cluster]
-    shl bx, 1                   ;; BX * 2 (2 bytes na entrada)
+    shl bx, 1 ;; BX * 2 (2 bytes na entrada)
 
-    add bx, bufferDeDisco       ;; Localização da FAT
+    add bx, bufferDeDisco ;; Localização da FAT
 
-    mov si, word[bx]            ;; SI contêm o próximo cluster
+    mov si, word[bx] ;; SI contêm o próximo cluster
 
-    mov word[cluster], si       ;; Salvar isso
+    mov word[cluster], si ;; Salvar isso
 
-    cmp si, 0xFFF8              ;; 0xFFF8 é fim de arquivo (EOF)
+    cmp si, 0xFFF8 ;; 0xFFF8 é fim de arquivo (EOF)
     jae finalizado
 
 ;; Adicionar espaço para o próximo cluster
 
-    add edi, ebp                ;; EBP tem o tamanho do cluster
+    add edi, ebp ;; EBP tem o tamanho do cluster
 
     jmp loopCarregarClusters
 
@@ -350,9 +350,9 @@ finalizado:
 
 .executarHBoot:
 
-    mov esi, BPB + (SEG_BOOT * 16)  ;; Apontar EBP para BIOS Parameter Block
+    mov esi, BPB + (SEG_BOOT * 16) ;; Apontar EBP para BIOS Parameter Block
     pop ebp
-    mov dl, byte[numDrive]          ;; Drive utilizado para a inicialização
+    mov dl, byte[numDrive] ;; Drive utilizado para a inicialização
 
 ;; HBoot tem um cabeçalho, então devemos pulá-lo para a execução
 
@@ -389,14 +389,14 @@ enderecoParticao: dd 0
 
 imprimir:
 
-    lodsb       ;; mov AL, [SI] & inc SI
+    lodsb ;; mov AL, [SI] & inc SI
 
-    or al, al   ;; cmp AL, 0
+    or al, al ;; cmp AL, 0
     jz .pronto
 
     mov ah, 0Eh
 
-    int 10h     ;; Enviar [SI] para a tela
+    int 10h ;; Enviar [SI] para a tela
 
     jmp imprimir
 
@@ -425,9 +425,9 @@ carregarSetor:
 
     mov dl, byte[numDrive]
     mov si, Saturno.Disco
-    mov ah, 0x42        ;; Função de leitura
+    mov ah, 0x42 ;; Função de leitura
 
-    int 13h             ;; Serviços de disco do BIOS
+    int 13h ;; Serviços de disco do BIOS
 
     jnc .concluido
 
@@ -449,17 +449,17 @@ carregarSetor:
 
 Saturno.Disco:
 
-.tamanho:       db 16
-.reservado:     db 0
-.totalSetores:  dw 0
-.deslocamento:  dw 0x0000
-.segmento:      dw 0
-.LBA:           dd 0
-                dd 0
+.tamanho:      db 16
+.reservado:    db 0
+.totalSetores: dw 0
+.deslocamento: dw 0x0000
+.segmento:     dw 0
+.LBA:          dd 0
+               dd 0
 
 ;;************************************************************************************
 
-TIMES 510-($-$$) db 0      ;; O arquivo deve ter exatos 512 bytes
+TIMES 510-($-$$) db 0 ;; O arquivo deve ter exatos 512 bytes
 
 assinaturaBoot:  dw 0xAA55 ;; Disco inicializável
 

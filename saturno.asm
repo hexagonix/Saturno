@@ -1,15 +1,15 @@
 ;;*************************************************************************************************
 ;;
-;; 88                                                                                88              
-;; 88                                                                                ""              
-;; 88                                                                                                
-;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8  
-;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'   
-;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(     
-;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,   
-;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8  
-;;                                               aa,    ,88                                         
-;;                                                "P8bbdP"       
+;; 88                                                                                88
+;; 88                                                                                ""
+;; 88
+;; 88,dPPPba,   ,adPPPba, 8b,     ,d8 ,adPPPPba,  ,adPPPb,d8  ,adPPPba,  8b,dPPPba,  88 8b,     ,d8
+;; 88P'    "88 a8P     88  `P8, ,8P'  ""     `P8 a8"    `P88 a8"     "8a 88P'   `"88 88  `P8, ,8P'
+;; 88       88 8PP"""""""    )888(    ,adPPPPP88 8b       88 8b       d8 88       88 88    )888(
+;; 88       88 "8b,   ,aa  ,d8" "8b,  88,    ,88 "8a,   ,d88 "8a,   ,a8" 88       88 88  ,d8" "8b,
+;; 88       88  `"Pbbd8"' 8P'     `P8 `"8bbdP"P8  `"PbbdP"P8  `"PbbdP"'  88       88 88 8P'     `P8
+;;                                               aa,    ,88
+;;                                                "P8bbdP"
 ;;
 ;;                     Sistema Operacional Hexagonix - Hexagonix Operating System
 ;;
@@ -19,7 +19,7 @@
 ;;*************************************************************************************************
 ;;
 ;; Português:
-;; 
+;;
 ;; O Hexagonix e seus componentes são licenciados sob licença BSD-3-Clause. Leia abaixo
 ;; a licença que governa este arquivo e verifique a licença de cada repositório para
 ;; obter mais informações sobre seus direitos e obrigações ao utilizar e reutilizar
@@ -38,10 +38,10 @@
 ;;
 ;; Copyright (c) 2015-2023, Felipe Miguel Nery Lunkes
 ;; All rights reserved.
-;; 
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
-;; 
+;;
 ;; 1. Redistributions of source code must retain the above copyright notice, this
 ;;    list of conditions and the following disclaimer.
 ;;
@@ -52,7 +52,7 @@
 ;; 3. Neither the name of the copyright holder nor the names of its
 ;;    contributors may be used to endorse or promote products derived from
 ;;    this software without specific prior written permission.
-;; 
+;;
 ;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -76,19 +76,19 @@
 ;;
 ;;************************************************************************************
 
-use16                   
+use16
 
     jmp short iniciarHBoot
-            
-    nop 
+
+    nop
 
 ;;************************************************************************************
 
 ;; BIOS Parameter Block (BPB)
-;; Necessário para a identificação do disco        
+;; Necessário para a identificação do disco
 
 ;;************************************************************************************
-                                                        
+
 BPB:
 
 NomeOEM:            db 'HEXAGON '    ;; Nome OEM
@@ -104,7 +104,7 @@ setoresPorTrilha:   dw 63            ;; Total de setores em uma trilha
 totalCabecas:       dw 255           ;; Número de cabeças de leitura no disco
 setoresOcultos:     dd 0             ;; Número de setores antes do início do volume (encontrar diretório raiz)
 totalSetores:       dd 92160         ;; Tamanho do disco. Aproximadamente 45 Mb
-numDrive:           db 0x80          ;; Número de identificação do drive. 0x80 para discos rígidos 
+numDrive:           db 0x80          ;; Número de identificação do drive. 0x80 para discos rígidos
                     db 0             ;; Reservado
 assinaturaDisco:    db 0             ;; Assinatura do disco
 IDVolume:           dd 0             ;; Qualquer número
@@ -122,11 +122,11 @@ iniciarHBoot:
 ;; Configurar pilha e ponteiro
 
     cli                ;; Desativar interrupções
-    
+
     mov ax, 0x5000
     mov ss, ax
     mov sp, 0
-    
+
     sti                ;; Habilitar interrupções
 
 ;; Salvar entedereço LBA da partição
@@ -143,13 +143,13 @@ iniciarHBoot:
     mov es, ax
 
     cli
-    
+
     cld                 ;; Limpar direção
-    
+
     mov si, 0x7c00      ;; Fonte (DS:SI)
     mov di, 0           ;; Destino (ES:DI)
     mov ecx, 512        ;; Total de bytes para mover
-    
+
     rep movsb
 
     jmp SEG_BOOT:inicio ;; Carregar novo CS e IP
@@ -157,19 +157,19 @@ iniciarHBoot:
 ;; Início da execução em 0x20000
 
 inicio:
-    
+
 ;; Carregar registradores de segmento para a nova posição
-    
+
     mov ax, SEG_BOOT
     mov ds, ax
     mov es, ax
-    
+
     sti
 
     mov byte[numDrive], dl ;; Salvar número do drive
 
 ;; Calcular o tamanho do diretório raiz
-;; 
+;;
 ;; Fórmula:
 ;;
 ;; Tamanho  = (entradasRaiz * 32) / bytesPorSetor
@@ -178,12 +178,12 @@ inicio:
     shl ax, 5           ;; Multiplicar por 32
     mov bx, word[bytesPorSetor]
     xor dx, dx          ;; DX = 0
-    
+
     div bx              ;; AX = AX / BX
-    
+
     mov word[tamanhoRaiz], ax ;; Salvar tamanho do diretório raiz
 
-;; Calcular o tamanho das tabelas FAT   
+;; Calcular o tamanho das tabelas FAT
 ;;
 ;; Fórmula:
 ;; Tamanho  = totalFATs * setoresPorFAT
@@ -191,9 +191,9 @@ inicio:
     mov ax, word[setoresPorFAT]
     movzx bx, byte[totalFATs]
     xor dx, dx                ;; DX = 0
-    
+
     mul bx                    ;; AX = AX * BX
-    
+
     mov word[tamanhoFATs], ax ;; Salvar tamanho das FATs
 
 ;; Calcular todos os setores reservados
@@ -203,33 +203,33 @@ inicio:
 ;; setoresReservados + LBA da partição
 
     add word[setoresReservados], bp ;; BP é o LBA da partição
-    
+
 ;; Calcular o endereço da área de dados
 ;;
 ;; Fórmula:
 ;;
 ;; setoresReservados + tamanhoFATs + tamanhoRaiz
 
-    movzx eax, word[setoresReservados]  
-    
+    movzx eax, word[setoresReservados]
+
     add ax, word[tamanhoFATs]
     add ax, word[tamanhoRaiz]
-    
+
     mov dword[areaDeDados], eax
-    
+
 ;; Calcular o endereço LBA do diretório raiz e o carregar
 ;;
 ;; Fórmula:
-;; 
+;;
 ;; LBA  = setoresReservados + tamanhoFATs
 
     movzx esi, word[setoresReservados]
-    
+
     add si, word[tamanhoFATs]
 
     mov ax, word[tamanhoRaiz]
     mov di, bufferDeDisco
-        
+
     call carregarSetor
 
 ;; Procurar no diretório raiz a entrada do arquivo para o carregar
@@ -238,7 +238,7 @@ inicio:
     mov bx, bufferDeDisco
 
     cld                 ;; Limpar direção
-    
+
 loopEncontrarArquivo:
 
 ;; Encontrar o nome de 11 caracteres do arquivo em uma entrada
@@ -247,15 +247,15 @@ loopEncontrarArquivo:
     mov cx, 11
     mov si, nomeHBoot
     mov di, bx
-    
+
     rep cmpsb           ;; Comparar (ECX) caracteres entre DI e SI
-    
+
     je arquivoEncontrado
 
     add bx, 32          ;; Ir para a próxima entrada do diretório raiz (+ 32 bytes)
-    
+
     xchg cx, dx         ;; Restaurar contador
-    
+
     loop loopEncontrarArquivo
 
 ;; O arquivo executável do Kernel não foi encontrado. Exibir mensagem de erro e finalizar.
@@ -263,14 +263,14 @@ loopEncontrarArquivo:
     pop ebp
 
     mov si, naoEncontrado
-    
+
     call imprimir
-    
+
     jmp $
 
 arquivoEncontrado:
 
-    mov si, word[bx+26]     
+    mov si, word[bx+26]
     mov word[cluster], si ;; Salvar primeiro cluster
 
 ;; Carregar FAT na memória para encontrar todos os clusters do arquivo
@@ -290,11 +290,11 @@ arquivoEncontrado:
     movzx eax, byte[setoresPorCluster]
     movzx ebx, word[bytesPorSetor]
     xor edx, edx
-        
-    mul ebx                 ;; AX = AX * BX 
-    
+
+    mul ebx                 ;; AX = AX * BX
+
     mov ebp, eax            ;; Salvar tamanho do cluster
-    
+
     mov ax, SEG_HBOOT       ;; Segmento de carregamento do Kernel
     mov es, ax
     mov edi, 0              ;; Buffer para carregar o Kernel
@@ -306,31 +306,31 @@ loopCarregarClusters:
 ;; Converter endereço lógico de um cluster para endereço LBA (endereço físico)
 ;;
 ;; Fórmula:
-;; 
+;;
 ;; ((cluster - 2) * setoresPorCluster) + areaDeDados
- 
-    movzx esi, word[cluster]    
-        
+
+    movzx esi, word[cluster]
+
     sub esi, 2
 
-    movzx ax, byte[setoresPorCluster]       
+    movzx ax, byte[setoresPorCluster]
     xor edx, edx         ;; DX = 0
-    
+
     mul esi              ;; (cluster - 2) * setoresPorCluster
-    
-    mov esi, eax    
+
+    mov esi, eax
 
     add esi, dword[areaDeDados]
 
     movzx ax, byte[setoresPorCluster] ;; Total de setores para carregar
-    
+
     call carregarSetor
-    
+
 ;; Encontrar próximo setor na tabela FAT
 
     mov bx, word[cluster]
     shl bx, 1                   ;; BX * 2 (2 bytes na entrada)
-    
+
     add bx, bufferDeDisco       ;; Localização da FAT
 
     mov si, word[bx]            ;; SI contêm o próximo cluster
@@ -341,15 +341,15 @@ loopCarregarClusters:
     jae finalizado
 
 ;; Adicionar espaço para o próximo cluster
-    
+
     add edi, ebp                ;; EBP tem o tamanho do cluster
-    
+
     jmp loopCarregarClusters
 
 finalizado:
 
 .executarHBoot:
-    
+
     mov esi, BPB + (SEG_BOOT * 16)  ;; Apontar EBP para BIOS Parameter Block
     pop ebp
     mov dl, byte[numDrive]          ;; Drive utilizado para a inicialização
@@ -362,15 +362,15 @@ finalizado:
 
 ;;************************************************************************************
 ;;
-;; Variáveis e constantes utilizadas 
+;; Variáveis e constantes utilizadas
 ;;
 ;;************************************************************************************
-    
+
 cluster: dw 0
 naoEncontrado:
 db "HBoot nao encontrado!", 0
 erroDisco:
-db "Erro de disco!", 0 ;; Mensagem de erro no disco  
+db "Erro de disco!", 0 ;; Mensagem de erro no disco
 nomeHBoot:
 db "HBOOT      "       ;; Nome do arquivo que contém o HBoot, a ser carregado
 
@@ -390,17 +390,17 @@ enderecoParticao: dd 0
 imprimir:
 
     lodsb       ;; mov AL, [SI] & inc SI
-    
+
     or al, al   ;; cmp AL, 0
     jz .pronto
-    
+
     mov ah, 0Eh
-    
+
     int 10h     ;; Enviar [SI] para a tela
-    
+
     jmp imprimir
-    
-.pronto: 
+
+.pronto:
 
     ret
 
@@ -411,7 +411,7 @@ imprimir:
 ;; Entrada:
 ;;
 ;; AX  - Total de setores para carregar
-;; ESI - Endereço LBA  
+;; ESI - Endereço LBA
 ;; ES:DI - Localização do destino
 
 carregarSetor:
@@ -426,27 +426,27 @@ carregarSetor:
     mov dl, byte[numDrive]
     mov si, Saturno.Disco
     mov ah, 0x42        ;; Função de leitura
-    
+
     int 13h             ;; Serviços de disco do BIOS
-    
-    jnc .concluido          
+
+    jnc .concluido
 
 ;; Se ocorrerem erros no disco, exibir mensagem de erro na tela
 
-    mov si, erroDisco   
-    
+    mov si, erroDisco
+
     call imprimir
-    
+
     jmp $
 
 .concluido:
-    
+
     pop si
-    
+
     ret
-    
+
 ;;************************************************************************************
-    
+
 Saturno.Disco:
 
 .tamanho:       db 16
@@ -458,11 +458,11 @@ Saturno.Disco:
                 dd 0
 
 ;;************************************************************************************
-                
+
 TIMES 510-($-$$) db 0      ;; O arquivo deve ter exatos 512 bytes
 
 assinaturaBoot:  dw 0xAA55 ;; Disco inicializável
 
 ;; O arquivo será carregado no espaço abaixo
 
-bufferDeDisco: 
+bufferDeDisco:

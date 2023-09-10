@@ -68,9 +68,9 @@
 
 ;;************************************************************************************
 ;;
-;;                                Saturno versão 1.7A
+;;                                Saturno versão 1.7B
 ;;
-;;                   Carregador de Inicialização do Kernel Hexagon
+;;                   Carregador de Inicialização do kernel Hexagon
 ;;
 ;;      Carrega o segundo estágio de inicialização, Hexagon Boot (HBoot) no disco
 ;;
@@ -114,7 +114,7 @@ sistemaArquivos:    db 'FAT16   '    ;; Nome do sistema de arquivos utilizado no
 ;;************************************************************************************
 
 SEG_BOOT        equ 0x2000 ;; Segmento para realocar carregador de inicialização
-SEG_HBOOT       equ 0x1000 ;; Segmento para carregar Kernel
+SEG_HBOOT       equ 0x1000 ;; Segmento para carregar o HBoot
 CABECALHO_HBOOT = 10h      ;; Tamanho do cabeçalho do HBoot (versão 2.0 do cabaçalho)
 
 iniciarHBoot:
@@ -258,7 +258,7 @@ loopEncontrarArquivo:
 
     loop loopEncontrarArquivo
 
-;; O arquivo executável do Kernel não foi encontrado. Exibir mensagem de erro e finalizar.
+;; O arquivo executável do HBoot não foi encontrado. Exibir mensagem de erro e finalizar.
 
     pop ebp
 
@@ -295,9 +295,9 @@ arquivoEncontrado:
 
     mov ebp, eax ;; Salvar tamanho do cluster
 
-    mov ax, SEG_HBOOT ;; Segmento de carregamento do Kernel
+    mov ax, SEG_HBOOT ;; Segmento de carregamento do HBoot
     mov es, ax
-    mov edi, 0 ;; Buffer para carregar o Kernel
+    mov edi, 0 ;; Buffer para carregar o HBoot
 
 ;; Encontrar cluster e carregar cadeia de clusters
 

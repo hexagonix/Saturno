@@ -70,7 +70,7 @@
 ;;
 ;;                                Saturno versão 1.7B
 ;;
-;;                   Carregador de Inicialização do kernel Hexagon
+;;          Carregador de Inicialização do kernel Hexagon - primeiro estágio
 ;;
 ;;      Carrega o segundo estágio de inicialização, Hexagon Boot (HBoot) no disco
 ;;
@@ -78,15 +78,15 @@
 
 use16
 
-    jmp short iniciarHBoot
+    jmp short iniciarSaturno
 
     nop
 
 ;;************************************************************************************
-
+;;
 ;; BIOS Parameter Block (BPB)
 ;; Necessário para a identificação do disco
-
+;;
 ;;************************************************************************************
 
 BPB:
@@ -117,7 +117,7 @@ SEG_BOOT        equ 0x2000 ;; Segmento para realocar carregador de inicializaç�
 SEG_HBOOT       equ 0x1000 ;; Segmento para carregar o HBoot
 CABECALHO_HBOOT = 10h      ;; Tamanho do cabeçalho do HBoot (versão 2.0 do cabaçalho)
 
-iniciarHBoot:
+iniciarSaturno:
 
 ;; Configurar pilha e ponteiro
 

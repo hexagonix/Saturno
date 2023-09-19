@@ -68,7 +68,7 @@
 
 ;;************************************************************************************
 ;;
-;;                              Saturno versão 1.0.2
+;;                              Saturno versão 1.0.3
 ;;
 ;;                   Carregador de Inicialização do Kernel Hexagon
 ;;
@@ -250,58 +250,58 @@ TIMES 0x1BE-($-$$) db 0
 
 particao1:
 
-.bootavel:             db 0x80  ;; 0x80 = ativa (bootável)
-.inicioCabeca:         db 0
-.setorDeInicio:        db 2
-.cilindroDeInicio:     db 0
-.IDSistemaDeArquivos:  db 0x06  ;; 0x06 = FAT16
-.ultimaCabeca:         db 255
-.setorFim:             db 255
-.cilindroFim:          db 255
-.LBA:                  dd 1     ;; Início LBA da partição
-.totalSetores:         dd 92160 ;; Tamanho da partição - Aproximadamente 45 megabytes
+.bootavel:            db 0x80  ;; 0x80 = ativa (bootável)
+.inicioCabeca:        db 0
+.setorDeInicio:       db 2
+.cilindroDeInicio:    db 0
+.IDSistemaDeArquivos: db 0x06  ;; 0x06 = FAT16
+.ultimaCabeca:        db 255
+.setorFim:            db 255
+.cilindroFim:         db 255
+.LBA:                 dd 1     ;; Início LBA da partição
+.totalSetores:        dd 92160 ;; Tamanho da partição - Aproximadamente 45 megabytes
 
 particao2:
 
-.bootavel:             db 0x00 ;; Não ativa
-.inicioCabeca:         db 0
-.setorDeInicio:        db 0
-.cilindroDeInicio:     db 0
-.IDSistemaDeArquivos:  db 0x00
-.ultimaCabeca:         db 0
-.setorFim:             db 0
-.cilindroFim:          db 0
-.LBA:                  dd 0 ;; Início LBA da partição
-.totalSetores:         dd 0 ;; Tamanho da partição - Aproximadamente 512 megabytes
+.bootavel:            db 0x00 ;; Não ativa
+.inicioCabeca:        db 0
+.setorDeInicio:       db 0
+.cilindroDeInicio:    db 0
+.IDSistemaDeArquivos: db 0x00
+.ultimaCabeca:        db 0
+.setorFim:            db 0
+.cilindroFim:         db 0
+.LBA:                 dd 0 ;; Início LBA da partição
+.totalSetores:        dd 0 ;; Tamanho da partição - Aproximadamente 512 megabytes
 
 particao3:
 
-.bootavel:             db 0x00
-.inicioCabeca:         db 0
-.setorDeInicio:        db 0
-.cilindroDeInicio:     db 0
-.IDSistemaDeArquivos:  db 0x00
-.ultimaCabeca:         db 0
-.setorFim:             db 0
-.cilindroFim:          db 0
-.LBA:                  dd 0
-.totalSetores:         dd 0
+.bootavel:            db 0x00
+.inicioCabeca:        db 0
+.setorDeInicio:       db 0
+.cilindroDeInicio:    db 0
+.IDSistemaDeArquivos: db 0x00
+.ultimaCabeca:        db 0
+.setorFim:            db 0
+.cilindroFim:         db 0
+.LBA:                 dd 0
+.totalSetores:        dd 0
 
 particao4:
 
-.bootavel:             db 0x00
-.inicioCabeca:         db 0
-.setorDeInicio:        db 0
-.cilindroDeInicio:     db 0
-.IDSistemaDeArquivos:  db 0x00
-.ultimaCabeca:         db 0
-.setorFim:             db 0
-.cilindroFim:          db 0
-.LBA:                  dd 0
-.totalSetores:         dd 0
+.bootavel:            db 0x00
+.inicioCabeca:        db 0
+.setorDeInicio:       db 0
+.cilindroDeInicio:    db 0
+.IDSistemaDeArquivos: db 0x00
+.ultimaCabeca:        db 0
+.setorFim:            db 0
+.cilindroFim:         db 0
+.LBA:                 dd 0
+.totalSetores:        dd 0
 
 ;;************************************************************************************
 
 TIMES 510-($-$$) db 0
 
-dw 0xAA55
+assinatura: dw 0xAA55

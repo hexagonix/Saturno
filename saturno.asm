@@ -68,7 +68,7 @@
 
 ;;************************************************************************************
 ;;
-;;                                Saturno versão 1.7B
+;;                                Saturno versão 1.7.1B
 ;;
 ;;          Carregador de Inicialização do kernel Hexagon - primeiro estágio
 ;;
@@ -91,25 +91,25 @@ use16
 
 BPB:
 
-NomeOEM:            db 'HEXAGON '    ;; Nome OEM
-bytesPorSetor:      dw 512           ;; Número de bytes em cada setor
-setoresPorCluster:  db 8             ;; Setores por cluster
-setoresReservados:  dw 16            ;; Setores reservados após o setor de inicialização
-totalFATs:          db 2             ;; Número de tabelas FAT
-entradasRaiz:       dw 512           ;; Número total de pastas e arquivos no diretório raiz
-pequenosSetores:    dw 0             ;; Número total de pequenos setores no disco
-tipoMedia:          db 0xf8          ;; Tipo de media. 0xf8 para discos rígidos
-setoresPorFAT:      dw 16            ;; Setores usados na FAT
-setoresPorTrilha:   dw 63            ;; Total de setores em uma trilha
-totalCabecas:       dw 255           ;; Número de cabeças de leitura no disco
-setoresOcultos:     dd 0             ;; Número de setores antes do início do volume (encontrar diretório raiz)
-totalSetores:       dd 92160         ;; Tamanho do disco. Aproximadamente 45 Mb
-numDrive:           db 0x80          ;; Número de identificação do drive. 0x80 para discos rígidos
-                    db 0             ;; Reservado
-assinaturaDisco:    db 0             ;; Assinatura do disco
-IDVolume:           dd 0             ;; Qualquer número
-rotuloVolume:       db 'HEXAGONIX  ' ;; Um nome de 11 caracteres para o disco
-sistemaArquivos:    db 'FAT16   '    ;; Nome do sistema de arquivos utilizado no disco
+NomeOEM:           db 'HEXAGON '    ;; Nome OEM
+bytesPorSetor:     dw 512           ;; Número de bytes em cada setor
+setoresPorCluster: db 8             ;; Setores por cluster
+setoresReservados: dw 16            ;; Setores reservados após o setor de inicialização
+totalFATs:         db 2             ;; Número de tabelas FAT
+entradasRaiz:      dw 512           ;; Número total de pastas e arquivos no diretório raiz
+pequenosSetores:   dw 0             ;; Número total de pequenos setores no disco
+tipoMedia:         db 0xf8          ;; Tipo de media. 0xf8 para discos rígidos
+setoresPorFAT:     dw 16            ;; Setores usados na FAT
+setoresPorTrilha:  dw 63            ;; Total de setores em uma trilha
+totalCabecas:      dw 255           ;; Número de cabeças de leitura no disco
+setoresOcultos:    dd 0             ;; Número de setores antes do início do volume (encontrar diretório raiz)
+totalSetores:      dd 92160         ;; Tamanho do disco. Aproximadamente 45 Mb
+numDrive:          db 0x80          ;; Número de identificação do drive. 0x80 para discos rígidos
+                   db 0             ;; Reservado
+assinaturaDisco:   db 0             ;; Assinatura do disco
+IDVolume:          dd 0             ;; Qualquer número
+rotuloVolume:      db 'HEXAGONIX  ' ;; Um nome de 11 caracteres para o disco
+sistemaArquivos:   db 'FAT16   '    ;; Nome do sistema de arquivos utilizado no disco
 
 ;;************************************************************************************
 
@@ -461,7 +461,9 @@ Saturno.Disco:
 
 TIMES 510-($-$$) db 0 ;; O arquivo deve ter exatos 512 bytes
 
-assinaturaBoot:  dw 0xAA55 ;; Disco inicializável
+assinaturaBoot: dw 0xAA55 ;; Disco inicializável
+
+;;************************************************************************************
 
 ;; O arquivo será carregado no espaço abaixo
 

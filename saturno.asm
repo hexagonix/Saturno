@@ -68,7 +68,7 @@
 
 ;;************************************************************************************
 ;;
-;;                                Saturno versão 1.7.1B
+;;                                Saturno versão 1.7.2B
 ;;
 ;;          Carregador de Inicialização do kernel Hexagon - primeiro estágio
 ;;
@@ -369,10 +369,10 @@ finalizado:
 cluster: dw 0
 naoEncontrado:
 db "HBoot nao encontrado!", 0
-erroDisco:
-db "Erro de disco!", 0 ;; Mensagem de erro no disco
-nomeHBoot:
-db "HBOOT      "       ;; Nome do arquivo que contém o HBoot, a ser carregado
+erroDisco: ;; Mensagem de erro no disco
+db "Erro de disco!", 0 
+nomeHBoot: ;; Nome do arquivo que contém o HBoot, a ser carregado
+db "HBOOT      "       
 
 tamanhoRaiz:      dw 0 ;; Tamanho do diretório raiz (em setores)
 tamanhoFATs:      dw 0 ;; Tamanho das tabelas FAT (em setores)

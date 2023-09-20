@@ -68,9 +68,9 @@
 
 ;;************************************************************************************
 ;;
-;;                              Saturno versão 1.0.3
+;;                              Saturno versão 1.0.4
 ;;
-;;                   Carregador de Inicialização do Kernel Hexagon
+;;                   Carregador de Inicialização do kernel Hexagon
 ;;
 ;;                                Tabela de partições
 ;;
@@ -103,16 +103,16 @@ inicio:
     cld
 
     mov si, 0x7c00 ;; Fonte
-    mov di, 0x500 ;; Destino
+    mov di, 0x500  ;; Destino
     mov ecx, 512
 
     rep movsb
 
-    jmp 0x50:comecar ;; Carregar novo CS e IP
+    jmp 0x50:configurar ;; Carregar novo CS e IP
 
 ;; Começando em 0x500
 
-comecar:
+configurar:
 
 ;; Carregar registradores de segmento para a nova localização
 

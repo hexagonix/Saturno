@@ -115,7 +115,7 @@ sistemaArquivos:   db 'FAT16   '    ;; Nome do sistema de arquivos utilizado no 
 
 SEG_BOOT        equ 0x2000 ;; Segmento para realocar carregador de inicialização
 SEG_HBOOT       equ 0x1000 ;; Segmento para carregar o HBoot
-CABECALHO_HBOOT = 10h      ;; Tamanho do cabeçalho do HBoot (versão 2.0 do cabaçalho)
+CABECALHO_HBOOT = 10h      ;; Tamanho do cabeçalho do HBoot (versão 2.0 do cabeçalho)
 
 iniciarSaturno:
 
@@ -370,9 +370,9 @@ cluster: dw 0
 naoEncontrado:
 db "HBoot nao encontrado!", 0
 erroDisco: ;; Mensagem de erro no disco
-db "Erro de disco!", 0 
+db "Erro de disco!", 0
 nomeHBoot: ;; Nome do arquivo que contém o HBoot, a ser carregado
-db "HBOOT      "       
+db "HBOOT      "
 
 tamanhoRaiz:      dw 0 ;; Tamanho do diretório raiz (em setores)
 tamanhoFATs:      dw 0 ;; Tamanho das tabelas FAT (em setores)

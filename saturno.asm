@@ -78,6 +78,14 @@
 
 use16
 
+SEG_BOOT        equ 0x2000 ;; Segmento para realocar carregador de inicialização
+SEG_HBOOT       equ 0x1000 ;; Segmento para carregar o HBoot
+CABECALHO_HBOOT = 10h      ;; Tamanho do cabeçalho do HBoot (versão 2.0 do cabeçalho)
+
+;;************************************************************************************
+
+entradaSaturno:
+
     jmp short iniciarSaturno
 
     nop
@@ -112,10 +120,6 @@ rotuloVolume:      db 'HEXAGONIX  ' ;; Um nome de 11 caracteres para o disco
 sistemaArquivos:   db 'FAT16   '    ;; Nome do sistema de arquivos utilizado no disco
 
 ;;************************************************************************************
-
-SEG_BOOT        equ 0x2000 ;; Segmento para realocar carregador de inicialização
-SEG_HBOOT       equ 0x1000 ;; Segmento para carregar o HBoot
-CABECALHO_HBOOT = 10h      ;; Tamanho do cabeçalho do HBoot (versão 2.0 do cabeçalho)
 
 iniciarSaturno:
 
@@ -456,7 +460,7 @@ Saturno.Disco:
 
 ;;************************************************************************************
 
-TIMES 510-($-$$) db 0 ;; O arquivo deve ter exatos 512 bytes
+times 510-($-$$) db 0 ;; O arquivo deve ter exatos 512 bytes
 
 assinaturaBoot: dw 0xAA55 ;; Disco inicializável
 

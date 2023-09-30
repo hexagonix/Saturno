@@ -68,7 +68,7 @@
 
 ;;************************************************************************************
 ;;
-;;                              Saturno versão 1.0.4
+;;                           MBR-Saturno versão 1.1.0
 ;;
 ;;                   Carregador de Inicialização do kernel Hexagon
 ;;
@@ -162,8 +162,8 @@ checarParticao4:
 carregarSetorInicializacao:
 
     mov eax, dword[di+8] ;; Endereço LBA da partição ativa
-    mov dword[PROPRIEDADES_DISCO.LBA], eax
-    mov si, PROPRIEDADES_DISCO
+    mov dword[MBR.Disco.LBA], eax
+    mov si, MBR.Disco
 
     mov ah, 0x42 ;; Carregar setor
 
@@ -205,22 +205,6 @@ semParticaoAtiva:
 
 ;;************************************************************************************
 
-PROPRIEDADES_DISCO:
-
-.tamanho:              db 16
-.reservado:            db 0
-.setoresParaLer:       dw 1
-.deslocamentoSegmento: dd 0x00007c00
-.LBA:                  dd 0
-                       dd 0
-
-msgSemParticaoAtiva:
-db "Nenhuma particao ativa encontrada no disco!", 10, 13, 10, 13, 0
-msgErroDisco:
-db "Erro no disco!", 0
-
-;;************************************************************************************
-
 ;; Função para imprimir string em modo real
 ;;
 ;; Entrada:
@@ -246,7 +230,23 @@ imprimir:
 
 ;;************************************************************************************
 
-TIMES 0x1BE-($-$$) db 0
+MBR.Disco:
+
+.tamanho:              db 16
+.reservado:            db 0
+.setoresParaLer:       dw 1
+.deslocamentoSegmento: dd 0x00007c00
+.LBA:                  dd 0
+                       dd 0
+
+msgSemParticaoAtiva:
+db "Nenhuma particao ativa encontrada no disco!", 10, 13, 10, 13, 0
+msgErroDisco:
+db "Erro no disco!", 0
+
+;;************************************************************************************
+
+times 0x1BE-($-$$) db 0
 
 particao1:
 
@@ -302,6 +302,6 @@ particao4:
 
 ;;************************************************************************************
 
-TIMES 510-($-$$) db 0
+times 510-($-$$) db 0
 
 assinatura: dw 0xAA55

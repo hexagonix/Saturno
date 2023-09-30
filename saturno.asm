@@ -68,7 +68,7 @@
 
 ;;************************************************************************************
 ;;
-;;                                Saturno versão 1.7.2B
+;;                                Saturno versão 1.8.0
 ;;
 ;;          Carregador de Inicialização do kernel Hexagon - primeiro estágio
 ;;
@@ -360,27 +360,6 @@ finalizado:
 
 ;;************************************************************************************
 
-;;************************************************************************************
-;;
-;; Variáveis e constantes utilizadas
-;;
-;;************************************************************************************
-
-cluster: dw 0
-naoEncontrado:
-db "HBoot nao encontrado!", 0
-erroDisco: ;; Mensagem de erro no disco
-db "Erro de disco!", 0
-nomeHBoot: ;; Nome do arquivo que contém o HBoot, a ser carregado
-db "HBOOT      "
-
-tamanhoRaiz:      dw 0 ;; Tamanho do diretório raiz (em setores)
-tamanhoFATs:      dw 0 ;; Tamanho das tabelas FAT (em setores)
-areaDeDados:      dd 0 ;; Endereço físico da área de dados (LBA)
-enderecoParticao: dd 0
-
-;;************************************************************************************
-
 ;; Função para imprimir string em modo real
 ;;
 ;; Entrada:
@@ -446,6 +425,24 @@ carregarSetor:
     ret
 
 ;;************************************************************************************
+
+;;************************************************************************************
+;;
+;; Variáveis e constantes utilizadas
+;;
+;;************************************************************************************
+
+naoEncontrado:
+db "HBoot nao encontrado!", 0
+erroDisco: ;; Mensagem de erro no disco
+db "Erro de disco!", 0
+nomeHBoot: ;; Nome do arquivo que contém o HBoot, a ser carregado
+db "HBOOT      "
+
+cluster:     dw 0
+tamanhoRaiz: dw 0 ;; Tamanho do diretório raiz (em setores)
+tamanhoFATs: dw 0 ;; Tamanho das tabelas FAT (em setores)
+areaDeDados: dd 0 ;; Endereço físico da área de dados (LBA)
 
 Saturno.Disco:
 

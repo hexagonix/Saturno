@@ -68,9 +68,9 @@
 
 ;;************************************************************************************
 ;;
-;;                                Saturno versão 1.8.0
+;;                                Saturno versão 1.8.1
 ;;
-;;          Carregador de Inicialização do kernel Hexagon - primeiro estágio
+;;          Carregador de Inicialização do Hexagonix - primeiro estágio
 ;;
 ;;      Carrega o segundo estágio de inicialização, Hexagon Boot (HBoot) no disco
 ;;

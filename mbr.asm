@@ -68,9 +68,9 @@
 
 ;;************************************************************************************
 ;;
-;;                           MBR-Saturno versão 1.1.0
+;;                           MBR-Saturno versão 1.1.1
 ;;
-;;                   Carregador de Inicialização do kernel Hexagon
+;;                     Carregador de Inicialização do Hexagonix
 ;;
 ;;                                Tabela de partições
 ;;

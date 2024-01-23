@@ -68,240 +68,240 @@
 
 ;;************************************************************************************
 ;;
-;;                           MBR-Saturno versão 1.1.1
+;;                           MBR-Saturno version 1.2.0
 ;;
-;;                     Carregador de Inicialização do Hexagonix
+;;                             Hexagonix Boot Loader
 ;;
-;;                                Tabela de partições
+;;                                Partition table
 ;;
 ;;************************************************************************************
 
 use16
 
-inicio:
+start:
 
-;; Configurar pilha e ponteiros
+;; Configure stack and pointers
 
-    cli ;; Desativar interrupções
+    cli ;; Disable interrupts
 
     mov ax, 0xffff
     mov ss, ax
     mov sp, 0
 
-    sti ;; Habilitar interrupções
+    sti ;; Enable interrupts
 
-    mov bx, dx ;; Salvar drive utilizado para a inicialização
+    mov bx, dx ;; Store drive used for boot
 
     mov ax, 0
     mov es, ax
     mov ds, ax
 
-;; Localizado entre 0x7c00 e 0x500
+;; Located between 0x7C00 and 0x500
 
     cli
 
     cld
 
-    mov si, 0x7c00 ;; Fonte
-    mov di, 0x500  ;; Destino
-    mov ecx, 512
+    mov si, 0x7C00 ;; Source
+    mov di, 0x500  ;; Destination
+    mov ecx, 512   ;; Size
 
     rep movsb
 
-    jmp 0x50:configurar ;; Carregar novo CS e IP
+    jmp 0x50:configure ;; Load new CS and IP
 
-;; Começando em 0x500
+;; Starting at 0x500
 
-configurar:
+configure:
 
-;; Carregar registradores de segmento para a nova localização
+;; Load segment registers to new location
 
     mov ax, 0x50
     mov ds, ax
 
     sti
 
-;; Checar se a partição é ativa e carregar o setor de inicialização
+;; Check if the partition is active and load the boot sector
 
-checarParticao1:
+checkPartition1:
 
-    cmp word[particao1.bootavel], 0x80
-    jne checarParticao2
+    cmp word[partition1.bootable], 0x80
+    jne checkPartition2
 
-    mov di, particao1 ;; Salvar partição ativa em DI
+    mov di, partition1 ;; Save active partition in DI
 
-    jmp carregarSetorInicializacao
+    jmp loadBootSector
 
-checarParticao2:
+checkPartition2:
 
-    cmp word[particao2.bootavel], 0x80
-    jne checarParticao3
+    cmp word[partition2.bootable], 0x80
+    jne checkPartition3
 
-    mov di, particao2
+    mov di, partition2
 
-    jmp carregarSetorInicializacao
+    jmp loadBootSector
 
-checarParticao3:
+checkPartition3:
 
-    cmp word[particao3.bootavel], 0x80
-    jne checarParticao4
+    cmp word[partition3.bootable], 0x80
+    jne checkPartition4
 
-    mov di, particao3
+    mov di, partition3
 
-    jmp carregarSetorInicializacao
+    jmp loadBootSector
 
-checarParticao4:
+checkPartition4:
 
-    cmp word[particao4.bootavel], 0x80
-    jne semParticaoAtiva
+    cmp word[partition4.bootable], 0x80
+    jne withoutActivePartition
 
-    mov di, particao4
+    mov di, partition4
 
-    jmp carregarSetorInicializacao
+    jmp loadBootSector
 
-carregarSetorInicializacao:
+loadBootSector:
 
-    mov eax, dword[di+8] ;; Endereço LBA da partição ativa
-    mov dword[MBR.Disco.LBA], eax
-    mov si, MBR.Disco
+    mov eax, dword[di+8] ;; LBA address of the active partition
+    mov dword[MBR.Disk.LBA], eax
+    mov si, MBR.Disk
 
-    mov ah, 0x42 ;; Carregar setor
+    mov ah, 0x42 ;; Load sector
 
-    int 13h ;; Serviços de disco do BIOS
+    int 13h ;; BIOS Disk Services
 
-    jnc leituraDiscoOK
+    jnc diskReadOk
 
-;; Imprimir mensagem de erro
+;; Print error message
 
-    mov esi, msgErroDisco
+    mov esi, diskErrorMsg
 
-    call imprimir
+    call printString
 
     jmp $
 
 ;;************************************************************************************
 
-leituraDiscoOK:
+diskReadOk:
 
-;; Carregar DS:SI para a primeira entrada
+;; Load DS:SI for first entry
 
     mov ax, 0
     mov ds, ax
     lea si, [di+0x500] ;; SI = DI+0x500
 
-    mov dx, bx ;; BX contêm o drive de boot
+    mov dx, bx ;; BX contain the boot drive
 
-    jmp 0x0000:0x7c00
+    jmp 0x0000:0x7C00
 
 ;;************************************************************************************
 
-semParticaoAtiva:
+withoutActivePartition:
 
-    mov si, msgSemParticaoAtiva
+    mov si, withoutActivePartitionMsg
 
-    call imprimir
+    call printString
 
     jmp $
 
 ;;************************************************************************************
 
-;; Função para imprimir string em modo real
+;; Function to print string in real mode
 ;;
-;; Entrada:
+;; Input:
 ;;
 ;; SI - String
 
-imprimir:
+printString:
 
     lodsb ;; mov AL, [SI] & inc SI
 
     or al, al ;; cmp AL, 0
-    jz .pronto
+    jz .done
 
     mov ah, 0Eh
 
-    int 10h ;; Enviar [SI] para a tela
+    int 10h ;; Send [SI] to screen
 
-    jmp imprimir
+    jmp printString
 
-.pronto:
+.done:
 
     ret
 
 ;;************************************************************************************
 
-MBR.Disco:
+MBR.Disk:
 
-.tamanho:              db 16
-.reservado:            db 0
-.setoresParaLer:       dw 1
-.deslocamentoSegmento: dd 0x00007c00
-.LBA:                  dd 0
-                       dd 0
+.size:          db 16
+.reserved:      db 0
+.sectorsToRead: dw 1
+.segmentOffset: dd 0x00007C00
+.LBA:           dd 0
+                dd 0
 
-msgSemParticaoAtiva:
-db "Nenhuma particao ativa encontrada no disco!", 10, 13, 10, 13, 0
-msgErroDisco:
-db "Erro no disco!", 0
+withoutActivePartitionMsg:
+db "No active partitions found on the disk!", 10, 13, 10, 13, 0
+diskErrorMsg:
+db "Disk error!", 0
 
 ;;************************************************************************************
 
 times 0x1BE-($-$$) db 0
 
-particao1:
+partition1:
 
-.bootavel:            db 0x80  ;; 0x80 = ativa (bootável)
-.inicioCabeca:        db 0
-.setorDeInicio:       db 2
-.cilindroDeInicio:    db 0
-.IDSistemaDeArquivos: db 0x06  ;; 0x06 = FAT16
-.ultimaCabeca:        db 255
-.setorFim:            db 255
-.cilindroFim:         db 255
-.LBA:                 dd 1     ;; Início LBA da partição
-.totalSetores:        dd 92160 ;; Tamanho da partição - Aproximadamente 45 megabytes
+.bootable:      db 0x80  ;; 0x80 = active (bootable)
+.headStart:     db 0
+.sectorStart:   db 2
+.cylinderStart: db 0
+.filesystemId:  db 0x06  ;; 0x06 = FAT16
+.lastHead:      db 255
+.endSector:     db 255
+.endCylinder:   db 255
+.LBA:           dd 1     ;; Partition LBA start
+.totalSectors:  dd 92160 ;; Partition size – Approximately 45 megabytes
 
-particao2:
+partition2:
 
-.bootavel:            db 0x00 ;; Não ativa
-.inicioCabeca:        db 0
-.setorDeInicio:       db 0
-.cilindroDeInicio:    db 0
-.IDSistemaDeArquivos: db 0x00
-.ultimaCabeca:        db 0
-.setorFim:            db 0
-.cilindroFim:         db 0
-.LBA:                 dd 0 ;; Início LBA da partição
-.totalSetores:        dd 0 ;; Tamanho da partição - Aproximadamente 512 megabytes
+.bootable:      db 0x00 ;; Não ativa
+.headStart:     db 0
+.sectorStart:   db 0
+.cylinderStart: db 0
+.filesystemId:  db 0x00
+.lastHead:      db 0
+.endSector:     db 0
+.endCylinder:   db 0
+.LBA:           dd 0 ;; Partition LBA start
+.totalSectors:  dd 0 
 
-particao3:
+partition3:
 
-.bootavel:            db 0x00
-.inicioCabeca:        db 0
-.setorDeInicio:       db 0
-.cilindroDeInicio:    db 0
-.IDSistemaDeArquivos: db 0x00
-.ultimaCabeca:        db 0
-.setorFim:            db 0
-.cilindroFim:         db 0
-.LBA:                 dd 0
-.totalSetores:        dd 0
+.bootable:      db 0x00
+.headStart:     db 0
+.sectorStart:   db 0
+.cylinderStart: db 0
+.filesystemId:  db 0x00
+.lastHead:      db 0
+.endSector:     db 0
+.endCylinder:   db 0
+.LBA:           dd 0
+.totalSectors:  dd 0
 
-particao4:
+partition4:
 
-.bootavel:            db 0x00
-.inicioCabeca:        db 0
-.setorDeInicio:       db 0
-.cilindroDeInicio:    db 0
-.IDSistemaDeArquivos: db 0x00
-.ultimaCabeca:        db 0
-.setorFim:            db 0
-.cilindroFim:         db 0
-.LBA:                 dd 0
-.totalSetores:        dd 0
+.bootable:      db 0x00
+.headStart:     db 0
+.sectorStart:   db 0
+.cylinderStart: db 0
+.filesystemId:  db 0x00
+.lastHead:      db 0
+.endSector:     db 0
+.endCylinder:   db 0
+.LBA:           dd 0
+.totalSectors:  dd 0
 
 ;;************************************************************************************
 
 times 510-($-$$) db 0
 
-assinatura: dw 0xAA55
+signature: dw 0xAA55

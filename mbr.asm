@@ -272,7 +272,7 @@ partition2:
 .endSector:     db 0
 .endCylinder:   db 0
 .LBA:           dd 0 ;; Partition LBA start
-.totalSectors:  dd 0 
+.totalSectors:  dd 0
 
 partition3:
 

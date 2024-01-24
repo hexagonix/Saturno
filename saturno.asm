@@ -68,78 +68,78 @@
 
 ;;************************************************************************************
 ;;
-;;                                Saturno versão 1.8.1
+;;                             Saturno version 1.9.0
 ;;
-;;          Carregador de Inicialização do Hexagonix - primeiro estágio
+;;                      Hexagonix Boot Loader - first stage
 ;;
-;;      Carrega o segundo estágio de inicialização, Hexagon Boot (HBoot) no disco
+;;            Loads the second boot stage, Hexagon Boot (HBoot) to disk
 ;;
 ;;************************************************************************************
 
 use16
 
-SEG_BOOT        equ 0x2000 ;; Segmento para realocar carregador de inicialização
-SEG_HBOOT       equ 0x1000 ;; Segmento para carregar o HBoot
-CABECALHO_HBOOT = 10h      ;; Tamanho do cabeçalho do HBoot (versão 2.0 do cabeçalho)
+SEG_BOOT     equ 0x2000 ;; Segment to relocate bootloader
+SEG_HBOOT    equ 0x1000 ;; Segment to load HBoot
+HBOOT_HEADER = 10h      ;; HBoot header size (header version 2.0)
 
 ;;************************************************************************************
 
-entradaSaturno:
+entryPoint:
 
-    jmp short iniciarSaturno
+    jmp short startSaturno
 
     nop
 
 ;;************************************************************************************
 ;;
 ;; BIOS Parameter Block (BPB)
-;; Necessário para a identificação do disco
+;; Required for disk identification
 ;;
 ;;************************************************************************************
 
 BPB:
 
-NomeOEM:           db 'HEXAGON '    ;; Nome OEM
-bytesPorSetor:     dw 512           ;; Número de bytes em cada setor
-setoresPorCluster: db 8             ;; Setores por cluster
-setoresReservados: dw 16            ;; Setores reservados após o setor de inicialização
-totalFATs:         db 2             ;; Número de tabelas FAT
-entradasRaiz:      dw 512           ;; Número total de pastas e arquivos no diretório raiz
-pequenosSetores:   dw 0             ;; Número total de pequenos setores no disco
-tipoMedia:         db 0xf8          ;; Tipo de media. 0xf8 para discos rígidos
-setoresPorFAT:     dw 16            ;; Setores usados na FAT
-setoresPorTrilha:  dw 63            ;; Total de setores em uma trilha
-totalCabecas:      dw 255           ;; Número de cabeças de leitura no disco
-setoresOcultos:    dd 0             ;; Número de setores antes do início do volume (encontrar diretório raiz)
-totalSetores:      dd 92160         ;; Tamanho do disco. Aproximadamente 45 Mb
-numDrive:          db 0x80          ;; Número de identificação do drive. 0x80 para discos rígidos
-                   db 0             ;; Reservado
-assinaturaDisco:   db 0             ;; Assinatura do disco
-IDVolume:          dd 0             ;; Qualquer número
-rotuloVolume:      db 'HEXAGONIX  ' ;; Um nome de 11 caracteres para o disco
-sistemaArquivos:   db 'FAT16   '    ;; Nome do sistema de arquivos utilizado no disco
+OEMName:           db 'HEXAGON '    ;; OEM name
+bytesPerSector:    dw 512           ;; Number of bytes in each sector
+sectorsPerCluster: db 8             ;; Sectors per cluster
+reservedSectors:   dw 16            ;; Reserved sectors after the boot sector
+totalFATs:         db 2             ;; Number of FAT tables
+rootEntries:       dw 512           ;; Total number of folders and files in the root directory
+smallSectors:      dw 0             ;; Total number of small sectors on the disk
+mediaType:         db 0xF8          ;; Media type. 0xF8 for hard drives
+sectoresPerFAT:    dw 16            ;; Sectors used in FAT
+sectoresPerTrack:  dw 63            ;; Total sectors in a track
+headNumber:        dw 255           ;; Number of read heads on the disk
+hiddenSectors:     dd 0             ;; Number of sectors before the start of the volume (find root directory)
+totalSectors:      dd 92160         ;; Disk size. Approximately 45 Mb
+numDrive:          db 0x80          ;; Drive identification number. 0x80 for hard drives
+reserved:          db 0             ;; Reserved
+diskSignature:     db 0             ;; Disk signature
+volumeId:          dd 0             ;; Volume identification number
+volumeLabel:       db 'HEXAGONIX  ' ;; An 11-character name for the disk
+fileSystemName:    db 'FAT16   '    ;; Name of the file system used on the disk
 
 ;;************************************************************************************
 
-iniciarSaturno:
+startSaturno:
 
-;; Configurar pilha e ponteiro
+;; Configure stack and pointer
 
-    cli ;; Desativar interrupções
+    cli ;; Disable interrupts
 
     mov ax, 0x5000
     mov ss, ax
     mov sp, 0
 
-    sti ;; Habilitar interrupções
+    sti ;; Enable interrupts
 
-;; Salvar entedereço LBA da partição
+;; Store partition LBA address
 
-    mov ebp, dword[si+8] ;; Endereço LBA da partição
+    mov ebp, dword[si+8] ;; Partition LBA address
 
     push ebp
 
-;; Localizado entre 0x7c00 e 0x20000
+;; Located between 0x7C00 and 0x20000
 
     mov ax, 0
     mov ds, ax
@@ -148,21 +148,21 @@ iniciarSaturno:
 
     cli
 
-    cld ;; Limpar direção
+    cld ;; Clear direction
 
-    mov si, 0x7c00 ;; Fonte (DS:SI)
-    mov di, 0 ;; Destino (ES:DI)
-    mov ecx, 512 ;; Total de bytes para mover
+    mov si, 0x7c00 ;; Source (DS:SI)
+    mov di, 0 ;; Destination (ES:DI)
+    mov ecx, 512 ;; Total bytes to move
 
     rep movsb
 
-    jmp SEG_BOOT:inicio ;; Carregar novo CS e IP
+    jmp SEG_BOOT:start ;; Load new CS and IP
 
-;; Início da execução em 0x20000
+;; Start of execution at 0x20000
 
-inicio:
+start:
 
-;; Carregar registradores de segmento para a nova posição
+;; Load segment registers to new position
 
     mov ax, SEG_BOOT
     mov ds, ax
@@ -170,259 +170,260 @@ inicio:
 
     sti
 
-    mov byte[numDrive], dl ;; Salvar número do drive
+    mov byte[numDrive], dl ;; Save drive number
 
-;; Calcular o tamanho do diretório raiz
+;; Calculate root directory size
 ;;
-;; Fórmula:
+;; Formula:
 ;;
-;; Tamanho  = (entradasRaiz * 32) / bytesPorSetor
+;; Size = (rootEntries * 32) / bytesPerSector
 
-    mov ax, word[entradasRaiz]
-    shl ax, 5 ;; Multiplicar por 32
-    mov bx, word[bytesPorSetor]
+    mov ax, word[rootEntries]
+    shl ax, 5 ;; Multiply by 32
+    mov bx, word[bytesPerSector]
     xor dx, dx ;; DX = 0
 
     div bx ;; AX = AX / BX
 
-    mov word[tamanhoRaiz], ax ;; Salvar tamanho do diretório raiz
+    mov word[rootSize], ax ;; Save root directory size
 
-;; Calcular o tamanho das tabelas FAT
+;; Calculate the size of FAT tables
 ;;
-;; Fórmula:
-;; Tamanho  = totalFATs * setoresPorFAT
+;; Formula:
+;;
+;; Size = totalFATs * sectorsPerFAT
 
-    mov ax, word[setoresPorFAT]
+    mov ax, word[sectoresPerFAT]
     movzx bx, byte[totalFATs]
     xor dx, dx ;; DX = 0
 
     mul bx ;; AX = AX * BX
 
-    mov word[tamanhoFATs], ax ;; Salvar tamanho das FATs
+    mov word[sizeFATs], ax ;; Save FAT size
 
-;; Calcular todos os setores reservados
+;; Calculate all reserved sectors
 ;;
-;; Fórmula:
+;; Formula:
 ;;
-;; setoresReservados + LBA da partição
+;; reservedSectors + partition LBA
 
-    add word[setoresReservados], bp ;; BP é o LBA da partição
+    add word[reservedSectors], bp ;; BP is the LBA of the partition
 
-;; Calcular o endereço da área de dados
+;; Calculate data area address
 ;;
-;; Fórmula:
+;; Formula:
 ;;
-;; setoresReservados + tamanhoFATs + tamanhoRaiz
+;; reservedSectors + sizeFATs + rootSize
 
-    movzx eax, word[setoresReservados]
+    movzx eax, word[reservedSectors]
 
-    add ax, word[tamanhoFATs]
-    add ax, word[tamanhoRaiz]
+    add ax, word[sizeFATs]
+    add ax, word[rootSize]
 
-    mov dword[areaDeDados], eax
+    mov dword[dataArea], eax
 
-;; Calcular o endereço LBA do diretório raiz e o carregar
+;; Calculate the LBA address of the root directory and load it
 ;;
-;; Fórmula:
+;; Formula:
 ;;
-;; LBA  = setoresReservados + tamanhoFATs
+;; LBA = reservedSectors + sizeFATs
 
-    movzx esi, word[setoresReservados]
+    movzx esi, word[reservedSectors]
 
-    add si, word[tamanhoFATs]
+    add si, word[sizeFATs]
 
-    mov ax, word[tamanhoRaiz]
-    mov di, bufferDeDisco
+    mov ax, word[rootSize]
+    mov di, diskBuffer
 
-    call carregarSetor
+    call loadSector
 
-;; Procurar no diretório raiz a entrada do arquivo para o carregar
+;; Search the root directory for the file entry to load it
 
-    mov cx, word[entradasRaiz]
-    mov bx, bufferDeDisco
+    mov cx, word[rootEntries]
+    mov bx, diskBuffer
 
-    cld ;; Limpar direção
+    cld ;; Clear direction
 
-loopEncontrarArquivo:
+findFileLoop:
 
-;; Encontrar o nome de 11 caracteres do arquivo em uma entrada
+;; Finding the 11-character file name in an entry
 
-    xchg cx, dx ;; Salvar contador de loop
+    xchg cx, dx ;; Save loop counter
     mov cx, 11
-    mov si, nomeHBoot
+    mov si, HBootFilename
     mov di, bx
 
-    rep cmpsb ;; Comparar (ECX) caracteres entre DI e SI
+    rep cmpsb ;; Compare (ECX) characters between DI and SI
 
-    je arquivoEncontrado
+    je fileFound
 
-    add bx, 32 ;; Ir para a próxima entrada do diretório raiz (+ 32 bytes)
+    add bx, 32 ;; Go to the next root directory entry (+32 bytes)
 
-    xchg cx, dx ;; Restaurar contador
+    xchg cx, dx ;; Restore counter
 
-    loop loopEncontrarArquivo
+    loop findFileLoop
 
-;; O arquivo executável do HBoot não foi encontrado. Exibir mensagem de erro e finalizar.
+;; The HBoot executable file was not found. Display error message and finish
 
     pop ebp
 
-    mov si, naoEncontrado
+    mov si, HBootNotFound
 
-    call imprimir
+    call printString
 
     jmp $
 
-arquivoEncontrado:
+fileFound:
 
     mov si, word[bx+26]
-    mov word[cluster], si ;; Salvar primeiro cluster
+    mov word[cluster], si ;; Save first cluster
 
-;; Carregar FAT na memória para encontrar todos os clusters do arquivo
+;; Load FAT into memory to find all clusters of the file
 
-    mov ax, word[setoresPorFAT] ;; Total de setores para carregar
-    mov si, word[setoresReservados] ;; LBA
-    mov di, bufferDeDisco ;; Buffer para onde os dados serão carregados
+    mov ax, word[sectoresPerFAT] ;; Total sectors to load
+    mov si, word[reservedSectors] ;; LBA
+    mov di, diskBuffer ;; Buffer where data will be loaded
 
-    call carregarSetor
+    call loadSector
 
-;; Calcular o tamanho do cluster em bytes
+;; Calculate cluster size in bytes
 ;;
-;; Fórmula:
+;; Formula:
 ;;
-;; setoresPorCluster * bytesPorSetor
+;; sectorsPerCluster * bytesPerSector
 
-    movzx eax, byte[setoresPorCluster]
-    movzx ebx, word[bytesPorSetor]
+    movzx eax, byte[sectorsPerCluster]
+    movzx ebx, word[bytesPerSector]
     xor edx, edx
 
     mul ebx ;; AX = AX * BX
 
-    mov ebp, eax ;; Salvar tamanho do cluster
+    mov ebp, eax ;; Save cluster size
 
-    mov ax, SEG_HBOOT ;; Segmento de carregamento do HBoot
+    mov ax, SEG_HBOOT ;; HBoot loading segment
     mov es, ax
-    mov edi, 0 ;; Buffer para carregar o HBoot
+    mov edi, 0 ;; Buffer to load HBoot
 
-;; Encontrar cluster e carregar cadeia de clusters
+;; Find cluster and load cluster chain
 
-loopCarregarClusters:
+loadClustersLoop:
 
-;; Converter endereço lógico de um cluster para endereço LBA (endereço físico)
+;; Convert a cluster's logical address to LBA address (physical address)
 ;;
-;; Fórmula:
+;; Formula:
 ;;
-;; ((cluster - 2) * setoresPorCluster) + areaDeDados
+;; ((cluster - 2) * sectorsPerCluster) + dataArea
 
     movzx esi, word[cluster]
 
     sub esi, 2
 
-    movzx ax, byte[setoresPorCluster]
+    movzx ax, byte[sectorsPerCluster]
     xor edx, edx ;; DX = 0
 
-    mul esi ;; (cluster - 2) * setoresPorCluster
+    mul esi ;; (cluster - 2) * sectorsPerCluster
 
     mov esi, eax
 
-    add esi, dword[areaDeDados]
+    add esi, dword[dataArea]
 
-    movzx ax, byte[setoresPorCluster] ;; Total de setores para carregar
+    movzx ax, byte[sectorsPerCluster] ;; Total sectors to load
 
-    call carregarSetor
+    call loadSector
 
-;; Encontrar próximo setor na tabela FAT
+;; Find next sector in FAT table
 
     mov bx, word[cluster]
-    shl bx, 1 ;; BX * 2 (2 bytes na entrada)
+    shl bx, 1 ;; BX * 2 (2 bytes on input)
 
-    add bx, bufferDeDisco ;; Localização da FAT
+    add bx, diskBuffer ;; FAT location
 
-    mov si, word[bx] ;; SI contêm o próximo cluster
+    mov si, word[bx] ;; SI contain the next cluster
 
-    mov word[cluster], si ;; Salvar isso
+    mov word[cluster], si ;; Store this
 
-    cmp si, 0xFFF8 ;; 0xFFF8 é fim de arquivo (EOF)
-    jae finalizado
+    cmp si, 0xFFF8 ;; 0xFFF8 is end of file (EOF)
+    jae finished
 
-;; Adicionar espaço para o próximo cluster
+;; Add space for the next cluster
 
-    add edi, ebp ;; EBP tem o tamanho do cluster
+    add edi, ebp ;; EBP has the size of the cluster
 
-    jmp loopCarregarClusters
+    jmp loadClustersLoop
 
-finalizado:
+finished:
 
-.executarHBoot:
+.startHBoot:
 
-    mov esi, BPB + (SEG_BOOT * 16) ;; Apontar EBP para BIOS Parameter Block
+    mov esi, BPB + (SEG_BOOT * 16) ;; Point EBP to BIOS Parameter Block
     pop ebp
-    mov dl, byte[numDrive] ;; Drive utilizado para a inicialização
+    mov dl, byte[numDrive] ;; Drive used for boot
 
-;; HBoot tem um cabeçalho, então devemos pulá-lo para a execução
+;; HBoot has a header so we should skip it for execution
 
-    jmp SEG_HBOOT:CABECALHO_HBOOT ;; Configurar CS:IP e executar HBoot
+    jmp SEG_HBOOT:HBOOT_HEADER ;; Configure CS:IP and run HBoot
 
 ;;************************************************************************************
 
-;; Função para imprimir string em modo real
+;; Function for print string in real mode
 ;;
-;; Entrada:
+;; Input:
 ;;
 ;; SI - String
 
-imprimir:
+printString:
 
     lodsb ;; mov AL, [SI] & inc SI
 
     or al, al ;; cmp AL, 0
-    jz .pronto
+    jz .done
 
     mov ah, 0Eh
 
-    int 10h ;; Enviar [SI] para a tela
+    int 10h ;; Send [SI] to screen
 
-    jmp imprimir
+    jmp printString
 
-.pronto:
+.done:
 
     ret
 
 ;;************************************************************************************
 
-;; Carregar setor do disco de boot atual
+;; Load sector from current boot disk
 ;;
-;; Entrada:
+;; Input:
 ;;
-;; AX  - Total de setores para carregar
-;; ESI - Endereço LBA
-;; ES:DI - Localização do destino
+;; AX    - Total sectors to load
+;; ESI   - LBA Address
+;; ES:DI - Destination
 
-carregarSetor:
+loadSector:
 
     push si
 
-    mov word[Saturno.Disco.totalSetores], ax
-    mov dword[Saturno.Disco.LBA], esi
-    mov word[Saturno.Disco.segmento], es
-    mov word[Saturno.Disco.deslocamento], di
+    mov word[Saturno.Disk.totalSectors], ax
+    mov dword[Saturno.Disk.LBA], esi
+    mov word[Saturno.Disk.segment], es
+    mov word[Saturno.Disk.offset], di
 
     mov dl, byte[numDrive]
-    mov si, Saturno.Disco
-    mov ah, 0x42 ;; Função de leitura
+    mov si, Saturno.Disk
+    mov ah, 0x42 ;; Read function
 
-    int 13h ;; Serviços de disco do BIOS
+    int 13h ;; BIOS Disk Services
 
-    jnc .concluido
+    jnc .done
 
-;; Se ocorrerem erros no disco, exibir mensagem de erro na tela
+;; If disk errors occur, display error message on screen
 
-    mov si, erroDisco
+    mov si, diskError
 
-    call imprimir
+    call printString
 
     jmp $
 
-.concluido:
+.done:
 
     pop si
 
@@ -432,40 +433,40 @@ carregarSetor:
 
 ;;************************************************************************************
 ;;
-;; Variáveis e constantes utilizadas
+;; Variables and constants used
 ;;
 ;;************************************************************************************
 
-naoEncontrado:
-db "HBoot nao encontrado!", 0
-erroDisco: ;; Mensagem de erro no disco
-db "Erro de disco!", 0
-nomeHBoot: ;; Nome do arquivo que contém o HBoot, a ser carregado
+HBootNotFound:
+db "HBoot not found!", 0
+diskError: ;; Disk error message
+db "HBoot: Disk error!", 0
+HBootFilename: ;; Name of the file containing HBoot, to be loaded
 db "HBOOT      "
 
-cluster:     dw 0
-tamanhoRaiz: dw 0 ;; Tamanho do diretório raiz (em setores)
-tamanhoFATs: dw 0 ;; Tamanho das tabelas FAT (em setores)
-areaDeDados: dd 0 ;; Endereço físico da área de dados (LBA)
+cluster:  dw 0
+rootSize: dw 0 ;; Root directory size (in sectors)
+sizeFATs: dw 0 ;; Size of FAT tables (in sectors)
+dataArea: dd 0 ;; Data area physical address (LBA)
 
-Saturno.Disco:
+Saturno.Disk:
 
-.tamanho:      db 16
-.reservado:    db 0
-.totalSetores: dw 0
-.deslocamento: dw 0x0000
-.segmento:     dw 0
+.size:         db 16
+.reserved:     db 0
+.totalSectors: dw 0
+.offset:       dw 0x0000
+.segment:      dw 0
 .LBA:          dd 0
                dd 0
 
 ;;************************************************************************************
 
-times 510-($-$$) db 0 ;; O arquivo deve ter exatos 512 bytes
+times 510-($-$$) db 0 ;; The file must be exactly 512 bytes
 
-assinaturaBoot: dw 0xAA55 ;; Disco inicializável
+bootSignature: dw 0xAA55 ;; Bootable volume
 
 ;;************************************************************************************
 
-;; O arquivo será carregado no espaço abaixo
+;; The file will be uploaded to the space below
 
-bufferDeDisco:
+diskBuffer:

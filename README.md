@@ -21,8 +21,8 @@
 # Saturno
 
 <details title="Português (Brasil)" align='left'>
-<br>
 <summary align='left'>🇧🇷 Português (Brasil)</summary>
+<br>
 
 <div align="justify">
 
@@ -45,8 +45,8 @@ O primeiro componente do Hexagonix é o Saturno. Ele é responsável por receber
 </details>
 
 <details title="English" align='left'>
-<br>
 <summary align='left'>🇬🇧 English</summary>
+<br>
 
 <div align="justify">
 
